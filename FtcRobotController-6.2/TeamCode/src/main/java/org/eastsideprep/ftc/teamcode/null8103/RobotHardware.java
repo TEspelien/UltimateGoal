@@ -80,7 +80,6 @@ public class RobotHardware {
         //dont touch I
 
         //kV should start at 1/max_velo
-
         shooter.setFeedforwardCoefficients(0.0, 0.0);
 
         //revIMU = new RevIMU(hwMap, "imu");

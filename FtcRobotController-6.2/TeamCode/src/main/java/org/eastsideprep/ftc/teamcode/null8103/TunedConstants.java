@@ -4,13 +4,21 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 public class TunedConstants {
 
+    //TODO: tune all of these values
+
     //this class saves useful positions and constants that are referenced in multiple opmodes
 
     static double POWER_SHOT_ANGLE = 10; //degrees to turn between each shot
 
+    //might need to strafe instead of turning to hit the powershots...
+    static double POWER_SHOT_STRAFE = 8;
+
     static Pose2d startPose = new Pose2d(-60, -24, Math.toRadians(180));
 
     static Pose2d visionPose = new Pose2d(-36, -24, Math.toRadians(140));
+
+    //the first corresponds to the first wobble goal placement, further away from the starting position
+    //the second wobble goal is placed a little closer
 
     static Pose2d regionA1Pose = new Pose2d(18, -66, Math.toRadians(30));
     static Pose2d regionA2Pose = new Pose2d(14, -62, Math.toRadians(30));
@@ -31,5 +39,4 @@ public class TunedConstants {
     static Pose2d highShootingPose = new Pose2d(0, -36, Math.toRadians(160));
 
     static Pose2d endPose = new Pose2d(12, -24, Math.toRadians(90));
-
 }

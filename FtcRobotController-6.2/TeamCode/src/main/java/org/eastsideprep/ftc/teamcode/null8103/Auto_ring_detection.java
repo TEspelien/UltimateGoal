@@ -106,7 +106,6 @@ public class Auto_ring_detection extends LinearOpMode {
 
             output.release();
             output = new Mat();
-            //matYCrCb.release();
 
             Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2YCrCb);
 
@@ -122,9 +121,10 @@ public class Auto_ring_detection extends LinearOpMode {
             Mat hierarchy = new Mat();
             Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
 
-            Imgproc.line(output, new Point(0, HORIZON), new Point(CAMERA_WIDTH, HORIZON), new Scalar(255, 0, 255), 3);
+            //draw the horizon line for tuning
+            Imgproc.line(output, new Point(0, HORIZON), new Point(CAMERA_WIDTH, HORIZON), new Scalar(255, 0, 0), 3);
 
-            Imgproc.drawContours(output, contours, -1, new Scalar(0.0, 255.0, 0.0), 4);
+            //Imgproc.drawContours(output, contours, -1, new Scalar(0.0, 255.0, 0.0), 4);
 
             int maxWidth = 0;
             Rect maxRect = new Rect();
@@ -141,6 +141,9 @@ public class Auto_ring_detection extends LinearOpMode {
                 c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
                 copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
             }
+
+            //draw the rectangle found above
+            Imgproc.rectangle(output, maxRect, new Scalar(0, 0, 255));
 
             double aspectRatio = (double) maxRect.height / maxRect.width;
 

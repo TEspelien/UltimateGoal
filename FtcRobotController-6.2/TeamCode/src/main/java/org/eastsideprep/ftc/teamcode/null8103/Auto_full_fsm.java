@@ -31,6 +31,7 @@ package org.eastsideprep.ftc.teamcode.null8103;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.localization.Localizer;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -130,17 +131,14 @@ public class Auto_full_fsm extends LinearOpMode {
         });
 
         drive = new SampleMecanumDrive(hardwareMap);
+        Pose2d currentPose = TunedConstants.startPose;
+        Localizer localizer = drive.getLocalizer();
 
         //things to tune:
 
         Timing.Timer powerShotTimer = new Timing.Timer(3000, TimeUnit.MILLISECONDS); //tune this length
 
         double shooterPower = 0;
-
-
-
-
-
 
 
         //other stuff:
@@ -244,6 +242,8 @@ public class Auto_full_fsm extends LinearOpMode {
                         }
                     }
                     break;
+
+                // 0 ring case
                 case DRIVE_TO_A1:
                     if (!drive.isBusy()) {
                         robot.lowerOpenWobble();
@@ -266,7 +266,51 @@ public class Auto_full_fsm extends LinearOpMode {
                     }
                     break;
 
-                //TODO: B and C cases
+                // 1 ring case
+                case DRIVE_TO_B1:
+                    if (!drive.isBusy()) {
+                        robot.lowerOpenWobble();
+                        drive.followTrajectoryAsync(driveTo2ndWobbleB);
+                        currentState = State.DRIVE_TO_2nd_WOBBLE_B;
+                    }
+                    break;
+                case DRIVE_TO_2nd_WOBBLE_B:
+                    if (!drive.isBusy()) {
+                        robot.closeRaiseWobble();
+                        drive.followTrajectoryAsync(driveToB2);
+                        currentState = State.DRIVE_TO_B2;
+                    }
+                    break;
+                case DRIVE_TO_B2:
+                    if (!drive.isBusy()) {
+                        robot.lowerOpenWobble();
+                        drive.followTrajectoryAsync(driveToPowerB);
+                        currentState = State.SHOOT_POWER;
+                    }
+                    break;
+
+                // 4 ring case
+                case DRIVE_TO_C1:
+                    if (!drive.isBusy()) {
+                        robot.lowerOpenWobble();
+                        drive.followTrajectoryAsync(driveTo2ndWobbleC);
+                        currentState = State.DRIVE_TO_2nd_WOBBLE_C;
+                    }
+                    break;
+                case DRIVE_TO_2nd_WOBBLE_C:
+                    if (!drive.isBusy()) {
+                        robot.closeRaiseWobble();
+                        drive.followTrajectoryAsync(driveToC2);
+                        currentState = State.DRIVE_TO_C2;
+                    }
+                    break;
+                case DRIVE_TO_C2:
+                    if (!drive.isBusy()) {
+                        robot.lowerOpenWobble();
+                        drive.followTrajectoryAsync(driveToPowerC);
+                        currentState = State.SHOOT_POWER;
+                    }
+                    break;
 
 
                 //TODO: tune these times
@@ -315,7 +359,6 @@ public class Auto_full_fsm extends LinearOpMode {
                 case DRIVE_TO_END:
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
-                        telemetry.addData("STATE", "IDLE");
                     }
 
             }
@@ -329,8 +372,15 @@ public class Auto_full_fsm extends LinearOpMode {
                 robot.shooter.set(shooterPower);
             }
 
+
+            telemetry.addData("STATE", currentState);
+
+            currentPose = localizer.getPoseEstimate();
+            telemetry.addData("X", currentPose.getX());
+            telemetry.addData("Y", currentPose.getY());
+            telemetry.addData("heading", currentPose.getHeading());
+
             telemetry.update();
         }
-
     }
 }
