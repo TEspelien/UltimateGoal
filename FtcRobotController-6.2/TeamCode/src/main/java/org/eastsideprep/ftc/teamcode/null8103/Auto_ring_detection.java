@@ -84,7 +84,7 @@ public class Auto_ring_detection extends LinearOpMode {
 
     }
 
-    class RingDetectorPipeline extends OpenCvPipeline {
+    static class RingDetectorPipeline extends OpenCvPipeline {
 
         int numRings = 0;
         int CAMERA_WIDTH = 320;

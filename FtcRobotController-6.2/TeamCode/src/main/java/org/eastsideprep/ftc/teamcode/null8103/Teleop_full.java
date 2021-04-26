@@ -88,13 +88,15 @@ public class Teleop_full extends LinearOpMode {
             //telemetry.addData("imu data", gyroAngle);
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.8) {
-                runIntake(1);
+                robot.runIntake(1);
             } else if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.8) {
-                runIntake(0);
+                robot.stopIntake();
+            } else if (gamepad.getButton(GamepadKeys.Button.A)) {
+                robot.runIntake(-1); //run in reverse to unjam
             }
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
-                runShooterSequence();
+                robot.shoot3Rings();
             }
 
             if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
@@ -116,37 +118,5 @@ public class Teleop_full extends LinearOpMode {
         double min = 0.2; //this means that very small joystick movements give enough power to overcome friction
         return Math.min(min + (1 - min) * (p * Math.pow(x, 3) + (1 - p) * x), 1);//max power is 1
     }
-
-    public void runIntake(double p) {
-        robot.front_intake.set(p);
-        robot.top_intake1.set(p);
-        robot.top_intake2.set(p);
-    }
-
-    Timing.Timer shooterTimer = new Timing.Timer(800, TimeUnit.MILLISECONDS);
-
-    public void runShooterSequence() {
-        telemetry.addData("log", "starting shooter sequence");
-        robot.shooter.set(0.95);
-        shooterTimer.start();
-        if (shooterTimer.done()) {
-            robot.RingPushServo.setPosition(0);
-            sleep(100);
-            robot.RingPushServo.setPosition(0.8);
-
-            sleep(100);
-            robot.RingPushServo.setPosition(0);
-            sleep(100);
-            robot.RingPushServo.setPosition(0.8);
-
-            sleep(100);
-            robot.RingPushServo.setPosition(0);
-
-            robot.shooter.set(0);
-        }
-        telemetry.addData("log", "finished shooter sequence");
-    }
-
-
 }
 

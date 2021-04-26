@@ -60,7 +60,6 @@ public class RobotHardware {
         wobbleGrabber = new SimpleServo(hwMap, "WobbleGrabberServo");
 
 
-
         leftFront.setInverted(true);
         rightFront.setInverted(true);
         rightBack.setInverted(true);
@@ -75,11 +74,49 @@ public class RobotHardware {
         shooter.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT); //this throws an error bc there is a bug in ftclib
 
+        shooter.setVeloCoefficients(0.0, 0.0, 0.0);
+        //start by increasing P
+        //then slowly increase D to reduce oscillations
+        //dont touch I
+
+        //kV should start at 1/max_velo
+
+        shooter.setFeedforwardCoefficients(0.0, 0.0);
+
         //revIMU = new RevIMU(hwMap, "imu");
         //revIMU.init();
     }
 
     //helpful functions for teleop and auto
+
+    //both of these shoot methods are targeting the high goal
+    public void shoot3Rings() {
+        Timing.Timer shooterTimer = new Timing.Timer(4000, TimeUnit.MILLISECONDS);
+        shooter.set(0.95);
+        shooterTimer.start();
+
+        if (shooterTimer.currentTime() > 2000) {
+            pushRing();
+        } else if (shooterTimer.currentTime() > 3000) {
+            pushRing();
+        } else if (shooterTimer.done()) {
+            pushRing();
+        }
+
+        shooter.stopMotor();
+    }
+
+    public void shoot1Ring() {
+        Timing.Timer shooterTimer = new Timing.Timer(2000, TimeUnit.MILLISECONDS);
+        shooter.set(0.95);
+        shooterTimer.start();
+
+        if (shooterTimer.done()) {
+            pushRing();
+        }
+
+        shooter.stopMotor();
+    }
 
     public void runIntake(double p) {
         front_intake.set(p);
@@ -104,11 +141,23 @@ public class RobotHardware {
     }
 
     public void closeRaiseWobble() {
-        Timing.Timer wobbleTimer = new Timing.Timer(250, TimeUnit.MICROSECONDS);
+        Timing.Timer wobbleTimer = new Timing.Timer(250, TimeUnit.MILLISECONDS);
         wobbleGrabber.setPosition(wobbleGrabberClosed);
         wobbleTimer.start();
         if (wobbleTimer.done()) {
             wobblePivot.setPosition(wobblePivotHigh);
+        }
+    }
+
+    double ringPusherLow = 0.8; //not touching ring
+    double ringPusherHigh = 0; //ring pushed into shooter
+
+    public void pushRing() {
+        Timing.Timer ringPusherTimer = new Timing.Timer(500, TimeUnit.MILLISECONDS);
+        RingPushServo.setPosition(ringPusherHigh);
+        ringPusherTimer.start();
+        if (ringPusherTimer.done()) {
+            RingPushServo.setPosition(ringPusherLow);
         }
     }
 }

@@ -69,43 +69,12 @@ public class shooter_test extends LinearOpMode {
         while (opModeIsActive()) {
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
-                runShooterSequence();
+                robot.shoot3Rings();
             }
+            telemetry.addData("velo", robot.shooter.getCorrectedVelocity());
 
             telemetry.update();
         }
-    }
-
-    Timing.Timer shooterTimer = new Timing.Timer(2000, TimeUnit.MILLISECONDS);//total time to shoot 3 rings
-
-    public void runShooterSequence() {
-
-        telemetry.addData("log", "starting shooter sequence");
-
-        robot.shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-        robot.shooter.setVeloCoefficients(0.0, 0.0, 0.0);
-        robot.shooter.setFeedforwardCoefficients(0.0, 0.0);
-
-        robot.shooter.set(0.95);
-        shooterTimer.start();
-
-        telemetry.addData("shooter rpm", robot.shooter.getCorrectedVelocity()/robot.shooter.getCPR());
-
-        if (robot.shooter.getCorrectedVelocity()/robot.shooter.getCPR() > 5600) {
-            robot.RingPushServo.setPosition(0);
-            sleep(100);
-            robot.RingPushServo.setPosition(0.8);
-
-            sleep(100);
-            robot.RingPushServo.setPosition(0);
-            sleep(100);
-            robot.RingPushServo.setPosition(0.8);
-
-            sleep(100);
-            robot.RingPushServo.setPosition(0);
-            robot.shooter.set(0);
-        }
-        telemetry.addData("log", "finished shooter sequence");
     }
 }
 
