@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.eastsideprep.ftc.teamcode.null8103.util;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
@@ -19,7 +19,7 @@ public class BNO055IMUUtil {
      * @param order axes order
      * @param signs axes signs
      */
-    public static void remapAxes(BNO055IMU imu, AxesOrder order, AxesSigns signs) {
+    public static void remapAxes(BNO055IMU imu, AxesOrder order, org.firstinspires.ftc.teamcode.util.AxesSigns signs) {
         try {
             // the indices correspond with the 2-bit encodings specified in the datasheet
             int[] indices = order.indices();
