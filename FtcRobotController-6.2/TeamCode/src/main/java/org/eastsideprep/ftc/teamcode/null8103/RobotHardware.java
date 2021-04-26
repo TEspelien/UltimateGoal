@@ -74,7 +74,7 @@ public class RobotHardware {
         shooter.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT); //this throws an error bc there is a bug in ftclib
 
-        shooter.setVeloCoefficients(0.0, 0.0, 0.0);
+        shooter.setVeloCoefficients(1.0, 0.0, 0.0);
         //start by increasing P
         //then slowly increase D to reduce oscillations
         //dont touch I
@@ -148,8 +148,8 @@ public class RobotHardware {
         }
     }
 
-    double ringPusherLow = 0.8; //not touching ring
-    double ringPusherHigh = 0; //ring pushed into shooter
+    double ringPusherLow = 0.48; //not touching ring
+    double ringPusherHigh = 0.4; //ring pushed into shooter
 
     public void pushRing() {
         Timing.Timer ringPusherTimer = new Timing.Timer(500, TimeUnit.MILLISECONDS);
