@@ -131,7 +131,12 @@ public class Auto_full_fsm extends LinearOpMode {
             }
         });
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        telemetry.addData("1", "stop point 1");
+        telemetry.update();
+
+        telemetry.addData("2", "stop point 2");
+        telemetry.update();
+
         Pose2d currentPose = TunedConstants.startPose;
         Localizer localizer = drive.getLocalizer();
 
@@ -220,6 +225,9 @@ public class Auto_full_fsm extends LinearOpMode {
 
         currentState = State.IDLE;
 
+        waitForStart();
+
+        drive = new SampleMecanumDrive(hardwareMap);
 
         while (opModeIsActive() && !isStopRequested()) {
 

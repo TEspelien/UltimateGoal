@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.eastsideprep.ftc.teamcode.null8103.drive.SampleMecanumDrive;
+
 import java.util.concurrent.TimeUnit;
 
 
@@ -64,6 +66,7 @@ public class Teleop_full extends LinearOpMode {
 
         MecanumDrive mecanumDrive = new MecanumDrive(robot.leftFront, robot.rightFront, robot.leftBack, robot.rightBack);
         GamepadEx gamepad = new GamepadEx(gamepad1);
+        //SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
 
         //double speedControl;
@@ -95,7 +98,7 @@ public class Teleop_full extends LinearOpMode {
             turnSpeed = ether(gamepad.getRightX(), turnGain);
             //gyroAngle = Math.toDegrees(robot.revIMU.getAbsoluteHeading() * Math.PI + Math.PI);//imu data is a double from -1 to 1, convert to 0 to 2pi
             mecanumDrive.driveRobotCentric(gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX(), true);
-            //mecanumDrive.driveFieldCentric(xSpeed, ySpeed, turnSpeed, gyroAngle, true);//squaring inputs is more precise
+            //mecanumDrive.driveFieldCentric(gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX(), drive.getExternalHeading(), true);//squaring inputs is more precise
             //telemetry.addData("imu data", gyroAngle);
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.8) {
@@ -149,34 +152,35 @@ public class Teleop_full extends LinearOpMode {
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
                 telemetry.addData("timer 1", shooterTimer.milliseconds());
-                shooterPower = 0.95;
+                shooterPower = 0.97;
                 if (!isShooterOn) {
                     shooterTimer.reset();
                     isShooterOn = true;
                 }
 
                 telemetry.addData("timer 2", shooterTimer.milliseconds());
-                robot.top_intake1.set(0.3);
-                robot.top_intake2.set(0.3);
+                robot.top_intake1.set(0.25);
+                robot.top_intake2.set(0.25);
 
-                if (shooterTimer.milliseconds() > 3500 && shooterTimer.milliseconds() < 4000) {
+                if (shooterTimer.milliseconds() >= 3500 && shooterTimer.milliseconds() < 4000) {
                     robot.RingPushServo.setPosition(ringPusherHigh);
-                } else if (shooterTimer.milliseconds() > 4000 && shooterTimer.milliseconds() < 5000) {
+                } else if (shooterTimer.milliseconds() >= 4000 && shooterTimer.milliseconds() < 5000) {
                     robot.RingPushServo.setPosition(ringPusherLow);
 
-                } else if (shooterTimer.milliseconds() > 5000 && shooterTimer.milliseconds() < 5500) {
+                } else if (shooterTimer.milliseconds() >= 5000 && shooterTimer.milliseconds() < 5500) {
                     robot.RingPushServo.setPosition(ringPusherHigh);
-                } else if (shooterTimer.milliseconds() > 5500 && shooterTimer.milliseconds() < 6500) {
+                } else if (shooterTimer.milliseconds() >= 5500 && shooterTimer.milliseconds() < 6500) {
                     robot.RingPushServo.setPosition(ringPusherLow);
 
-                } else if (shooterTimer.milliseconds() > 6500 && shooterTimer.milliseconds() < 7500) {
+                } else if (shooterTimer.milliseconds() >= 6500 && shooterTimer.milliseconds() < 7500) {
                     robot.RingPushServo.setPosition(ringPusherHigh);
-                } else if (shooterTimer.milliseconds() > 7500 && shooterTimer.milliseconds() < 8000) {
+                } else if (shooterTimer.milliseconds() >= 7500 && shooterTimer.milliseconds() < 8000) {
                     robot.RingPushServo.setPosition(ringPusherLow);
                 }
             } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.8) {
                 shooterPower = 0;
                 isShooterOn = false;
+                robot.RingPushServo.setPosition(ringPusherLow);
             }
 
             robot.shooter.motor.setPower(shooterPower);
@@ -189,6 +193,7 @@ public class Teleop_full extends LinearOpMode {
             //sleep(25);
         }
     }
+
 
     //see graph at https://www.desmos.com/calculator/dx7yql2ekh
     public double ether(double x, double p) {
