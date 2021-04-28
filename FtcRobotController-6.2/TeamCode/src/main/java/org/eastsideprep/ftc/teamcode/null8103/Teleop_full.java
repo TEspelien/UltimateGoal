@@ -35,6 +35,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +56,7 @@ public class Teleop_full extends LinearOpMode {
          * The init() method of the hardware class does all the work here
          */
 
-        telemetry.addData("Say", "Ready");
+        telemetry.addData(">", "Ready");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -76,6 +77,16 @@ public class Teleop_full extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
 
         boolean isIntakeOn = false;
+        boolean isShooterOn = false;
+        boolean areBlockersOut = false;
+        boolean wobbleDown = false;
+        boolean grabberOpen = false;
+
+        double shooterPower = 0;
+
+        ElapsedTime shooterTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
+        robot.RingPushServo.setPosition(ringPusherLow);
 
         while (opModeIsActive()) {
 
@@ -83,7 +94,7 @@ public class Teleop_full extends LinearOpMode {
             ySpeed = ether(gamepad.getLeftY(), driveGain);
             turnSpeed = ether(gamepad.getRightX(), turnGain);
             //gyroAngle = Math.toDegrees(robot.revIMU.getAbsoluteHeading() * Math.PI + Math.PI);//imu data is a double from -1 to 1, convert to 0 to 2pi
-            mecanumDrive.driveRobotCentric(xSpeed, ySpeed, turnSpeed, true);
+            mecanumDrive.driveRobotCentric(gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX(), true);
             //mecanumDrive.driveFieldCentric(xSpeed, ySpeed, turnSpeed, gyroAngle, true);//squaring inputs is more precise
             //telemetry.addData("imu data", gyroAngle);
 
@@ -91,25 +102,91 @@ public class Teleop_full extends LinearOpMode {
                 robot.runIntake(1);
             } else if (gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.8) {
                 robot.stopIntake();
-            } else if (gamepad.getButton(GamepadKeys.Button.A)) {
+            }
+            if (gamepad.getButton(GamepadKeys.Button.B)) {
                 robot.runIntake(-1); //run in reverse to unjam
             }
 
+            if (gamepad.getButton(GamepadKeys.Button.X)) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+                sleep(200);
+            } else if (gamepad.getButton(GamepadKeys.Button.Y)) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+                sleep(200);
+            }
+
+            if (gamepad.getButton((GamepadKeys.Button.A)) && areBlockersOut) {
+                robot.leftBlocker.setPosition(0.5);
+                robot.rightBlocker.setPosition(0.4);
+                sleep(200);
+                areBlockersOut = false;
+            } else if (gamepad.getButton((GamepadKeys.Button.A)) && !areBlockersOut) {
+                robot.leftBlocker.setPosition(0.9);
+                robot.rightBlocker.setPosition(0.0);
+                sleep(200);
+                areBlockersOut = true;
+            }
+
+            if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) && wobbleDown) {
+                robot.wobblePivot.setPosition(robot.wobblePivotHigh);
+                sleep(200);
+                wobbleDown = false;
+            } else if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER) && !wobbleDown) {
+                robot.wobblePivot.setPosition(robot.wobblePivotLow);
+                sleep(200);
+                wobbleDown = true;
+            }
+
+            if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) && grabberOpen) {
+                robot.wobbleGrabber.setPosition(robot.wobbleGrabberClosed);
+                sleep(200);
+                grabberOpen = false;
+            } else if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER) && !grabberOpen) {
+                robot.wobbleGrabber.setPosition(robot.wobbleGrabberOpen);
+                sleep(200);
+                grabberOpen = true;
+            }
+
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
-                robot.shoot3Rings();
+                telemetry.addData("timer 1", shooterTimer.milliseconds());
+                shooterPower = 0.95;
+                if (!isShooterOn) {
+                    shooterTimer.reset();
+                    isShooterOn = true;
+                }
+
+                telemetry.addData("timer 2", shooterTimer.milliseconds());
+                robot.top_intake1.set(0.3);
+                robot.top_intake2.set(0.3);
+
+                if (shooterTimer.milliseconds() > 3500 && shooterTimer.milliseconds() < 4000) {
+                    robot.RingPushServo.setPosition(ringPusherHigh);
+                } else if (shooterTimer.milliseconds() > 4000 && shooterTimer.milliseconds() < 5000) {
+                    robot.RingPushServo.setPosition(ringPusherLow);
+
+                } else if (shooterTimer.milliseconds() > 5000 && shooterTimer.milliseconds() < 5500) {
+                    robot.RingPushServo.setPosition(ringPusherHigh);
+                } else if (shooterTimer.milliseconds() > 5500 && shooterTimer.milliseconds() < 6500) {
+                    robot.RingPushServo.setPosition(ringPusherLow);
+
+                } else if (shooterTimer.milliseconds() > 6500 && shooterTimer.milliseconds() < 7500) {
+                    robot.RingPushServo.setPosition(ringPusherHigh);
+                } else if (shooterTimer.milliseconds() > 7500 && shooterTimer.milliseconds() < 8000) {
+                    robot.RingPushServo.setPosition(ringPusherLow);
+                }
+            } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.8) {
+                shooterPower = 0;
+                isShooterOn = false;
             }
 
-            if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)) {
-                robot.lowerOpenWobble();
-            }
+            robot.shooter.motor.setPower(shooterPower);
 
-            if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)) {
-                robot.closeRaiseWobble();
-            }
-
-            //telemetry.addData("intake current", robot.front_intake.getCurrent());
+            telemetry.addData("shooter speed", robot.shooter.getCorrectedVelocity());
+            telemetry.addData("shooter timer", shooterTimer.milliseconds());
 
             telemetry.update();
+
+            //sleep(25);
         }
     }
 
@@ -118,5 +195,9 @@ public class Teleop_full extends LinearOpMode {
         double min = 0.2; //this means that very small joystick movements give enough power to overcome friction
         return Math.min(min + (1 - min) * (p * Math.pow(x, 3) + (1 - p) * x), 1);//max power is 1
     }
+
+
+    double ringPusherLow = 0.52; //not touching ring
+    double ringPusherHigh = 0.39; //ring pushed into shooter
 }
 

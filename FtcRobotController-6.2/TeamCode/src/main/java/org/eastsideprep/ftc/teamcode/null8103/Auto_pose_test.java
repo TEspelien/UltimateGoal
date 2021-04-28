@@ -1,5 +1,6 @@
 package org.eastsideprep.ftc.teamcode.null8103;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.eastsideprep.ftc.teamcode.null8103.drive.DriveConstants;
 import org.eastsideprep.ftc.teamcode.null8103.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class Auto_pose_test extends LinearOpMode {
 
     RobotHardware robot = new RobotHardware();
-
 
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -108,6 +109,11 @@ public class Auto_pose_test extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
+
+        //possible solution?
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        Telemetry telemetry = dashboard.getTelemetry();
+
         telemetry.addData("log", "starting");
         drive.followTrajectory(trajectory);
         telemetry.addData("log", "done");

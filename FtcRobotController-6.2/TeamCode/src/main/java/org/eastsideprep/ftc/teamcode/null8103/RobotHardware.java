@@ -33,8 +33,8 @@ public class RobotHardware {
     public SimpleServo wobblePivot = null;
     public SimpleServo wobbleGrabber = null;
 
-    public SimpleServo leftSideArm = null;
-    public SimpleServo rightSideArm = null;
+    public SimpleServo leftBlocker = null;
+    public SimpleServo rightBlocker = null;
 
     RevIMU revIMU = null;
 
@@ -59,6 +59,8 @@ public class RobotHardware {
         wobblePivot = new SimpleServo(hwMap, "WobblePivotServo");
         wobbleGrabber = new SimpleServo(hwMap, "WobbleGrabberServo");
 
+        leftBlocker = new SimpleServo(hwMap, "LeftRingBlockerServo");
+        rightBlocker = new SimpleServo(hwMap, "RightRingBlockerServo");
 
         leftFront.setInverted(true);
         rightFront.setInverted(true);
@@ -68,19 +70,21 @@ public class RobotHardware {
         front_intake.setInverted(false);
         top_intake1.setInverted(false);
         top_intake2.setInverted(false);
-        shooter.setInverted(true);
+        shooter.setInverted(false);
 
-        shooter.setRunMode(Motor.RunMode.VelocityControl);
-        shooter.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        shooter.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //shooter.setRunMode(Motor.RunMode.VelocityControl);
+        //shooter.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //shooter.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT); //this throws an error bc there is a bug in ftclib
 
-        shooter.setVeloCoefficients(1.0, 0.0, 0.0);
+        //shooter.setVeloCoefficients(1, 0.0, 0.0);
         //start by increasing P
         //then slowly increase D to reduce oscillations
         //dont touch I
 
         //kV should start at 1/max_velo
-        shooter.setFeedforwardCoefficients(0.0, 0.0);
+        //shooter.setFeedforwardCoefficients(0.0, 0.0001);
 
         //revIMU = new RevIMU(hwMap, "imu");
         //revIMU.init();
@@ -131,8 +135,8 @@ public class RobotHardware {
 
     double wobblePivotLow = 0.3;
     double wobblePivotHigh = 1;
-    double wobbleGrabberClosed = 1;
-    double wobbleGrabberOpen = 0.2;
+    double wobbleGrabberClosed = 0.2;
+    double wobbleGrabberOpen = 1;
 
     public void lowerOpenWobble() {
         wobbleGrabber.setPosition(wobbleGrabberOpen);
@@ -152,12 +156,13 @@ public class RobotHardware {
     double ringPusherHigh = 0.4; //ring pushed into shooter
 
     public void pushRing() {
-        Timing.Timer ringPusherTimer = new Timing.Timer(500, TimeUnit.MILLISECONDS);
+        Timing.Timer ringPusherTimer = new Timing.Timer(1000, TimeUnit.MILLISECONDS);
         RingPushServo.setPosition(ringPusherHigh);
         ringPusherTimer.start();
-        if (ringPusherTimer.done()) {
-            RingPushServo.setPosition(ringPusherLow);
-        }
+//        while (!ringPusherTimer.done()) {
+//
+//        }
+        RingPushServo.setPosition(ringPusherLow);
     }
 }
 

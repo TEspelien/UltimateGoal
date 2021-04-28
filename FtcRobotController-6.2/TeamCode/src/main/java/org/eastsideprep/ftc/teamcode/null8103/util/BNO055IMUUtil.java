@@ -19,7 +19,7 @@ public class BNO055IMUUtil {
      * @param order axes order
      * @param signs axes signs
      */
-    public static void remapAxes(BNO055IMU imu, AxesOrder order, org.firstinspires.ftc.teamcode.util.AxesSigns signs) {
+    public static void remapAxes(BNO055IMU imu, AxesOrder order,org.eastsideprep.ftc.teamcode.null8103.util.AxesSigns signs) {
         try {
             // the indices correspond with the 2-bit encodings specified in the datasheet
             int[] indices = order.indices();

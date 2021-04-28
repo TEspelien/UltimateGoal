@@ -41,6 +41,7 @@ import org.eastsideprep.ftc.teamcode.null8103.Auto_ring_detection.RingDetectorPi
 import org.eastsideprep.ftc.teamcode.null8103.TunedConstants;
 import org.eastsideprep.ftc.teamcode.null8103.drive.DriveConstants;
 import org.eastsideprep.ftc.teamcode.null8103.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -311,7 +312,6 @@ public class Auto_full_fsm extends LinearOpMode {
                         currentState = State.SHOOT_POWER;
                     }
                     break;
-
 
                 //TODO: tune these times
                 case SHOOT_POWER:

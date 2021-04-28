@@ -93,7 +93,7 @@ public class Auto_ring_detection extends LinearOpMode {
         Scalar lowerOrange = new Scalar(0.0, 141.0, 0.0);
         Scalar upperOrange = new Scalar(255.0, 230.0, 95.0);
 
-        double HORIZON = 0.3 * CAMERA_WIDTH;
+        double HORIZON = 0.65 * CAMERA_WIDTH;
         double MIN_WIDTH = 100;
 
         double BOUND_RATIO = 0.7;
@@ -134,7 +134,7 @@ public class Auto_ring_detection extends LinearOpMode {
 
                 int w = rect.width;
                 // checking if the rectangle is below the horizon
-                if (w > maxWidth && rect.y + rect.height > HORIZON) {
+                if (w > maxWidth && rect.y + rect.height < HORIZON) {
                     maxWidth = w;
                     maxRect = rect;
                 }
