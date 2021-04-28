@@ -29,6 +29,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -141,9 +142,16 @@ public class SampleMecanumDrive extends MecanumDrive {
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "LF");
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+
         leftRear = hardwareMap.get(DcMotorEx.class, "LB");
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+
         rightRear = hardwareMap.get(DcMotorEx.class, "RB");
+        rightRear.setDirection(DcMotorSimple.Direction.FORWARD);
+
         rightFront = hardwareMap.get(DcMotorEx.class, "RF");
+        rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
