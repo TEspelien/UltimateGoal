@@ -92,6 +92,42 @@ public class RobotHardware {
 
     //helpful functions for teleop and auto
 
+    public void forwards(int pos, double power){
+        leftFront.setTargetPosition(pos);
+        rightFront.setTargetPosition(pos);
+        rightBack.setTargetPosition(pos);
+        leftBack.setTargetPosition(pos);
+
+        leftFront.set(power);
+        rightFront.set(power);
+        rightBack.set(power);
+        leftBack.set(power);
+    }
+
+    public void turnLeft(int pos, double power){
+        leftFront.setTargetPosition(-pos);
+        rightFront.setTargetPosition(pos);
+        rightBack.setTargetPosition(pos);
+        leftBack.setTargetPosition(-pos);
+
+        leftFront.set(-power);
+        rightFront.set(power);
+        rightBack.set(power);
+        leftBack.set(-power);
+    }
+
+    public void turnRight(int pos, double power){
+        leftFront.setTargetPosition(pos);
+        rightFront.setTargetPosition(-pos);
+        rightBack.setTargetPosition(-pos);
+        leftBack.setTargetPosition(pos);
+
+        leftFront.set(power);
+        rightFront.set(-power);
+        rightBack.set(-power);
+        leftBack.set(power);
+    }
+
     //both of these shoot methods are targeting the high goal
     public void shoot3Rings() {
         Timing.Timer shooterTimer = new Timing.Timer(4000, TimeUnit.MILLISECONDS);

@@ -104,6 +104,9 @@ public class Auto_for_comp extends LinearOpMode {
 
         //TODO:
         //drive forwards a tiny bit to get a better vision result
+        robot.forwards(100, 0.8); //for example
+        robot.turnLeft(100, 0.7);
+        robot.turnRight(100, 0.7);
 
         numRings = ringDetectorPipeline.getResult();
 
