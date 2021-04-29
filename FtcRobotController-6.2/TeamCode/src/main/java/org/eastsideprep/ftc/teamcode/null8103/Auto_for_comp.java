@@ -104,9 +104,20 @@ public class Auto_for_comp extends LinearOpMode {
 
         //TODO:
         //drive forwards a tiny bit to get a better vision result
-        robot.forwards(100, 0.8); //for example
-        robot.turnLeft(100, 0.7);
-        robot.turnRight(100, 0.7);
+        robot.forwards(-10, -0.5); //for example
+        //robot.turnLeft(100, 0.7);
+        //robot.turnRight(100, 0.7);
+//
+        for (int i = 0; i < 30000; i++) {
+            telemetry.addData("LF", robot.leftFront.getCurrentPosition());
+            telemetry.addData("LB", robot.leftBack.getCurrentPosition());
+            telemetry.addData("RF", robot.rightFront.getCurrentPosition());
+            telemetry.addData("RB", robot.rightBack.getCurrentPosition());
+            telemetry.update();
+            sleep(1);
+        }
+
+        sleep(30000);
 
         numRings = ringDetectorPipeline.getResult();
 

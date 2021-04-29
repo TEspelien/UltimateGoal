@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.R;
 
 import java.util.concurrent.TimeUnit;
 
@@ -92,39 +93,85 @@ public class RobotHardware {
 
     //helpful functions for teleop and auto
 
+//    public void forwards(int pos, double power){
+//        leftFront.setTargetPosition(pos);
+//        rightFront.setTargetPosition(-pos);
+//        rightBack.setTargetPosition(-pos);
+//        leftBack.setTargetPosition(pos);
+//
+//        leftFront.set(power);
+//        rightFront.set(-power);
+//        rightBack.set(-power);
+//        leftBack.set(power);
+//    }
     public void forwards(int pos, double power){
-        leftFront.setTargetPosition(pos);
-        rightFront.setTargetPosition(pos);
-        rightBack.setTargetPosition(pos);
-        leftBack.setTargetPosition(pos);
+        int LFT = leftFront.getCurrentPosition()+pos;
+        int LBT = leftBack.getCurrentPosition()-pos;
+        int RFT = rightFront.getCurrentPosition()-pos;
+        int RBT = rightBack.getCurrentPosition()+pos;
+
+        leftFront.setTargetPosition(LFT);
+        rightFront.setTargetPosition(LBT);
+        rightBack.setTargetPosition(RFT);
+        leftBack.setTargetPosition(RBT);
 
         leftFront.set(power);
-        rightFront.set(power);
-        rightBack.set(power);
+        rightFront.set(-power);
+        rightBack.set(-power);
         leftBack.set(power);
+
+        boolean done = false;
+        boolean LF = false;
+        boolean LB = false;
+        boolean RF = false;
+        boolean RB = false;
+
+        while(done == false) {
+            if(leftFront.getCurrentPosition() >= LFT) {
+                leftFront.stopMotor();
+                LF=true;
+            }
+            if(leftBack.getCurrentPosition() >= LBT) {
+                leftBack.stopMotor();
+                LB=true;
+            }
+            if(rightFront.getCurrentPosition() <= RFT) {
+                rightFront.stopMotor();
+                RF=true;
+            }
+            if(rightBack.getCurrentPosition() <= RBT) {
+                rightBack.stopMotor();
+                RB=true;
+            }
+            if (LF == true && LB == true && RF == true && RB == true) {
+                done = true;
+            }
+        }
     }
+
 
     public void turnLeft(int pos, double power){
         leftFront.setTargetPosition(-pos);
-        rightFront.setTargetPosition(pos);
-        rightBack.setTargetPosition(pos);
+        rightFront.setTargetPosition(-pos);
+        rightBack.setTargetPosition(-pos);
         leftBack.setTargetPosition(-pos);
 
+
         leftFront.set(-power);
-        rightFront.set(power);
-        rightBack.set(power);
+        rightFront.set(-power);
+        rightBack.set(-power);
         leftBack.set(-power);
     }
 
     public void turnRight(int pos, double power){
         leftFront.setTargetPosition(pos);
-        rightFront.setTargetPosition(-pos);
-        rightBack.setTargetPosition(-pos);
+        rightFront.setTargetPosition(pos);
+        rightBack.setTargetPosition(pos);
         leftBack.setTargetPosition(pos);
 
         leftFront.set(power);
-        rightFront.set(-power);
-        rightBack.set(-power);
+        rightFront.set(power);
+        rightBack.set(power);
         leftBack.set(power);
     }
 
