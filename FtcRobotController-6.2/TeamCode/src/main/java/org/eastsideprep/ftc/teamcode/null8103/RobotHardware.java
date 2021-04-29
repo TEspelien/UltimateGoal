@@ -152,8 +152,8 @@ public class RobotHardware {
         }
     }
 
-    double ringPusherLow = 0.48; //not touching ring
-    double ringPusherHigh = 0.4; //ring pushed into shooter
+    double ringPusherLow = 0.52; //not touching ring
+    double ringPusherHigh = 0.39; //ring pushed into shooter
 
     public void pushRing() {
         Timing.Timer ringPusherTimer = new Timing.Timer(1000, TimeUnit.MILLISECONDS);
