@@ -94,11 +94,7 @@ public class Auto_for_comp extends LinearOpMode {
 
         boolean shootingDone = false;
 
-
         waitForStart();
-
-        drive = new SampleMecanumDrive(hardwareMap);
-
 
         ElapsedTime shooterTimer = new ElapsedTime();
 
@@ -106,24 +102,18 @@ public class Auto_for_comp extends LinearOpMode {
         double ringPusherLow = 0.52; //not touching ring
         double ringPusherHigh = 0.39; //ring pushed into shooter
 
+        //TODO:
+        //drive forwards a tiny bit to get a better vision result
+
         numRings = ringDetectorPipeline.getResult();
 
-        switch (numRings) {
-            case 0:
-                //drive to A
-            case 1:
-                //drive to B
-            case 4:
-                //drive to C
-
-        }
-
+        //TODO:
+        //drive forwards to shooting position
 
         while (!shootingDone) {
-            telemetry.addData("timer 1", shooterTimer.milliseconds());
+
             shooterPower = 0.97;
 
-            telemetry.addData("timer 2", shooterTimer.milliseconds());
             robot.top_intake1.set(0.25);
             robot.top_intake2.set(0.25);
 
@@ -146,5 +136,30 @@ public class Auto_for_comp extends LinearOpMode {
             robot.shooter.motor.setPower(shooterPower);
         }
 
+        switch (numRings) {
+            case 0:
+                //TODO
+                //drive to A
+
+                robot.lowerOpenWobble();
+
+                //TODO
+                //drive to park
+            case 1:
+                //TODO
+                //drive to B
+
+                robot.lowerOpenWobble();
+
+                //TODO
+                //drive to park
+            case 4:
+                //TODO
+                //drive to C
+                robot.lowerOpenWobble();
+
+                //TODO
+                //drive to park
+        }
     }
 }
