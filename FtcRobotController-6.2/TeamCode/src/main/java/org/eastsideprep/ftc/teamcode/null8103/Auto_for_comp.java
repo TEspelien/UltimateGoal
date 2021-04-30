@@ -49,7 +49,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name = "full FSM auto")
+@Autonomous(name = "auto for comp")
 
 public class Auto_for_comp extends LinearOpMode {
 
@@ -61,6 +61,8 @@ public class Auto_for_comp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        waitForStart();
+
         /* init steps:
         - init hardware
         - set up phone camera and vision pipeline
@@ -70,6 +72,8 @@ public class Auto_for_comp extends LinearOpMode {
 
         robot = new RobotHardware();
         robot.init(hardwareMap);
+
+
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         OpenCvInternalCamera phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
@@ -94,7 +98,7 @@ public class Auto_for_comp extends LinearOpMode {
 
         boolean shootingDone = false;
 
-        waitForStart();
+
 
         ElapsedTime shooterTimer = new ElapsedTime();
 
@@ -104,25 +108,40 @@ public class Auto_for_comp extends LinearOpMode {
 
         //TODO:
         //drive forwards a tiny bit to get a better vision result
-        robot.forwards(-10, -0.5); //for example
-        //robot.turnLeft(100, 0.7);
+        robot.backwards(400, 0.7); //for example
+        robot.turnLeft(50, 0.7);
+                //robot.turnLeft(100, 0.7);
         //robot.turnRight(100, 0.7);
 //
-        for (int i = 0; i < 30000; i++) {
-            telemetry.addData("LF", robot.leftFront.getCurrentPosition());
-            telemetry.addData("LB", robot.leftBack.getCurrentPosition());
-            telemetry.addData("RF", robot.rightFront.getCurrentPosition());
-            telemetry.addData("RB", robot.rightBack.getCurrentPosition());
-            telemetry.update();
-            sleep(1);
-        }
+//        for (int i = 0; i < 30000; i++) {
+//            telemetry.addData("LF", robot.leftFront.getCurrentPosition());
+//            telemetry.addData("LB", robot.leftBack.getCurrentPosition());
+//            telemetry.addData("RF", robot.rightFront.getCurrentPosition());
+//            telemetry.addData("RB", robot.rightBack.getCurrentPosition());
+//            telemetry.update();
+//            sleep(1);
+//        }
 
-        sleep(30000);
+        sleep(2000);
 
         numRings = ringDetectorPipeline.getResult();
+        telemetry.addData("num rings", "" + ringDetectorPipeline.getResult());
+        telemetry.addData("num rings", "" + ringDetectorPipeline.getResult());
+        telemetry.update();
 
         //TODO:
         //drive forwards to shooting position
+
+        robot.turnLeft(500,0.7);
+        robot.backwards(1400, 0.7);
+        robot.turnRight(950, 0.7);
+        robot.backwards(700,0.7);
+        sleep(2000);
+        robot.turnRight(500,0.7);
+        robot.backwards(1500, 0.7);
+        robot.lowerOpenWobble();
+
+        sleep(25000);
 
         while (!shootingDone) {
 

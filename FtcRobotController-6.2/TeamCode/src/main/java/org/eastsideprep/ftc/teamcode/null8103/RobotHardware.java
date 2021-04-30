@@ -106,9 +106,9 @@ public class RobotHardware {
 //    }
     public void forwards(int pos, double power){
         int LFT = leftFront.getCurrentPosition()+pos;
-        int LBT = leftBack.getCurrentPosition()-pos;
+        int LBT = leftBack.getCurrentPosition()+ pos;
         int RFT = rightFront.getCurrentPosition()-pos;
-        int RBT = rightBack.getCurrentPosition()+pos;
+        int RBT = rightBack.getCurrentPosition()-pos;
 
         leftFront.setTargetPosition(LFT);
         rightFront.setTargetPosition(LBT);
@@ -121,58 +121,175 @@ public class RobotHardware {
         leftBack.set(power);
 
         boolean done = false;
-        boolean LF = false;
-        boolean LB = false;
-        boolean RF = false;
-        boolean RB = false;
+        int motorsDone = 0;
 
-        while(done == false) {
-            if(leftFront.getCurrentPosition() >= LFT) {
+        while (done == false) {
+            if (leftFront.getCurrentPosition() >= LFT) {
                 leftFront.stopMotor();
-                LF=true;
+                motorsDone++;
             }
-            if(leftBack.getCurrentPosition() >= LBT) {
+            if (leftBack.getCurrentPosition() >= LBT) {
                 leftBack.stopMotor();
-                LB=true;
+                motorsDone++;
             }
-            if(rightFront.getCurrentPosition() <= RFT) {
+            if (rightFront.getCurrentPosition() <= RFT) {
                 rightFront.stopMotor();
-                RF=true;
+                motorsDone++;
+
             }
-            if(rightBack.getCurrentPosition() <= RBT) {
+            if (rightBack.getCurrentPosition() <= RBT) {
                 rightBack.stopMotor();
-                RB=true;
+                motorsDone++;
             }
-            if (LF == true && LB == true && RF == true && RB == true) {
+            if (motorsDone >=3) {
                 done = true;
             }
         }
+        leftFront.stopMotor();
+        leftBack.stopMotor();
+        rightFront.stopMotor();
+        rightBack.stopMotor();
+    }
+    public void backwards(int pos, double power) {
+        int LFT = leftFront.getCurrentPosition() - pos;
+        int LBT = leftBack.getCurrentPosition() - pos;
+        int RFT = rightFront.getCurrentPosition() + pos;
+        int RBT = rightBack.getCurrentPosition() + pos;
+
+        leftFront.setTargetPosition(LFT);
+        rightFront.setTargetPosition(LBT);
+        rightBack.setTargetPosition(RFT);
+        leftBack.setTargetPosition(RBT);
+
+        leftFront.set(-power);
+        rightFront.set(power);
+        rightBack.set(power);
+        leftBack.set(-power);
+
+        boolean done = false;
+        int motorsDone = 0;
+
+        while (done == false) {
+            if (leftFront.getCurrentPosition() <= LFT) {
+                leftFront.stopMotor();
+                motorsDone++;
+            }
+            if (leftBack.getCurrentPosition() <= LBT) {
+                leftBack.stopMotor();
+                motorsDone++;
+            }
+            if (rightFront.getCurrentPosition() >= RFT) {
+                rightFront.stopMotor();
+                motorsDone++;
+
+            }
+            if (rightBack.getCurrentPosition() >= RBT) {
+                rightBack.stopMotor();
+                motorsDone++;
+            }
+            if (motorsDone >=3) {
+                done = true;
+            }
+        }
+        leftFront.stopMotor();
+        leftBack.stopMotor();
+        rightFront.stopMotor();
+        rightBack.stopMotor();
     }
 
-
     public void turnLeft(int pos, double power){
-        leftFront.setTargetPosition(-pos);
-        rightFront.setTargetPosition(-pos);
-        rightBack.setTargetPosition(-pos);
-        leftBack.setTargetPosition(-pos);
+        int LFT = leftFront.getCurrentPosition() + pos;
+        int LBT = leftBack.getCurrentPosition() + pos;
+        int RFT = rightFront.getCurrentPosition() + pos;
+        int RBT = rightBack.getCurrentPosition() + pos;
 
+        leftFront.setTargetPosition(LFT);
+        rightFront.setTargetPosition(LBT);
+        rightBack.setTargetPosition(RFT);
+        leftBack.setTargetPosition(RBT);
 
         leftFront.set(-power);
         rightFront.set(-power);
         rightBack.set(-power);
         leftBack.set(-power);
+
+        boolean done = false;
+        int motorsDone = 0;
+
+        while (done == false) {
+            if (leftFront.getCurrentPosition() >= LFT) {
+                leftFront.stopMotor();
+                motorsDone++;
+            }
+            if (leftBack.getCurrentPosition() >= LBT) {
+                leftBack.stopMotor();
+                motorsDone++;
+            }
+            if (rightFront.getCurrentPosition() >= RFT) {
+                rightFront.stopMotor();
+                motorsDone++;
+
+            }
+            if (rightBack.getCurrentPosition() >= RBT) {
+                rightBack.stopMotor();
+                motorsDone++;
+            }
+            if (motorsDone >=3) {
+                done = true;
+            }
+        }
+        leftFront.stopMotor();
+        leftBack.stopMotor();
+        rightFront.stopMotor();
+        rightBack.stopMotor();
     }
 
     public void turnRight(int pos, double power){
-        leftFront.setTargetPosition(pos);
-        rightFront.setTargetPosition(pos);
-        rightBack.setTargetPosition(pos);
-        leftBack.setTargetPosition(pos);
+            int LFT = leftFront.getCurrentPosition() - pos;
+            int LBT = leftBack.getCurrentPosition() - pos;
+            int RFT = rightFront.getCurrentPosition() - pos;
+            int RBT = rightBack.getCurrentPosition() - pos;
 
-        leftFront.set(power);
-        rightFront.set(power);
-        rightBack.set(power);
-        leftBack.set(power);
+            leftFront.setTargetPosition(LFT);
+            rightFront.setTargetPosition(LBT);
+            rightBack.setTargetPosition(RFT);
+            leftBack.setTargetPosition(RBT);
+
+            leftFront.set(power);
+            rightFront.set(power);
+            rightBack.set(power);
+            leftBack.set(power);
+
+            boolean done = false;
+            int motorsDone = 0;
+
+            while (done == false) {
+                if (leftFront.getCurrentPosition() <= LFT) {
+                    leftFront.stopMotor();
+                    motorsDone++;
+                }
+                if (leftBack.getCurrentPosition() <= LBT) {
+                    leftBack.stopMotor();
+                    motorsDone++;
+                }
+                if (rightFront.getCurrentPosition() <= RFT) {
+                    rightFront.stopMotor();
+                    motorsDone++;
+
+                }
+                if (rightBack.getCurrentPosition() <= RBT) {
+                    rightBack.stopMotor();
+                    motorsDone++;
+                }
+                if (motorsDone >=3) {
+                    done = true;
+                }
+            }
+            leftFront.stopMotor();
+            leftBack.stopMotor();
+            rightFront.stopMotor();
+            rightBack.stopMotor();
+
     }
 
     //both of these shoot methods are targeting the high goal
