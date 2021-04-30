@@ -39,14 +39,27 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.eastsideprep.ftc.teamcode.null8103.Auto_ring_detection.RingDetectorPipeline;
+//import org.eastsideprep.ftc.teamcode.null8103.Auto_ring_detection.RingDetectorPipeline;
 import org.eastsideprep.ftc.teamcode.null8103.drive.DriveConstants;
 import org.eastsideprep.ftc.teamcode.null8103.drive.SampleMecanumDrive;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+import org.openftc.easyopencv.OpenCvPipeline;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Autonomous(name = "auto for comp")
@@ -124,10 +137,14 @@ public class Auto_for_comp extends LinearOpMode {
 
         sleep(2000);
 
-        numRings = ringDetectorPipeline.getResult();
-        telemetry.addData("num rings", "" + ringDetectorPipeline.getResult());
-        telemetry.addData("num rings", "" + ringDetectorPipeline.getResult());
-        telemetry.update();
+        while (opModeIsActive()) {
+            numRings = ringDetectorPipeline.getResult();
+            telemetry.addData("num rings: ", numRings);
+            telemetry.update();
+
+            // Don't burn CPU cycles busy-looping in this sample
+            sleep(1000);
+        }
 
         //TODO:
         //drive forwards to shooting position
@@ -135,9 +152,35 @@ public class Auto_for_comp extends LinearOpMode {
         robot.turnLeft(500,0.7);
         robot.backwards(1400, 0.7);
         robot.turnRight(950, 0.7);
-        robot.backwards(700,0.7);
-        sleep(2000);
-        robot.turnRight(500,0.7);
+        robot.backwards(900,0.7);
+
+        while (!shootingDone) {
+
+            shooterPower = 0.97;
+
+            robot.top_intake1.set(0.25);
+            robot.top_intake2.set(0.25);
+
+            if (shooterTimer.milliseconds() >= 3500 && shooterTimer.milliseconds() < 4000) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+            } else if (shooterTimer.milliseconds() >= 4000 && shooterTimer.milliseconds() < 5000) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+
+            } else if (shooterTimer.milliseconds() >= 5000 && shooterTimer.milliseconds() < 5500) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+            } else if (shooterTimer.milliseconds() >= 5500 && shooterTimer.milliseconds() < 6500) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+
+            } else if (shooterTimer.milliseconds() >= 6500 && shooterTimer.milliseconds() < 7500) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+            } else if (shooterTimer.milliseconds() >= 7500 && shooterTimer.milliseconds() < 8000) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+                shootingDone = true;
+            }
+            robot.shooter.motor.setPower(shooterPower);
+        }
+
+        robot.turnRight(400,0.7);
         robot.backwards(1500, 0.7);
         robot.lowerOpenWobble();
 
@@ -195,4 +238,87 @@ public class Auto_for_comp extends LinearOpMode {
                 //drive to park
         }
     }
+    static class RingDetectorPipeline extends OpenCvPipeline {
+
+        int numRings = 0;
+        int CAMERA_WIDTH = 320;
+
+        //to tune:
+        Scalar lowerOrange = new Scalar(0.0, 141.0, 0.0);
+        Scalar upperOrange = new Scalar(255.0, 230.0, 95.0);
+
+        double HORIZON = 0.65 * CAMERA_WIDTH;
+        double MIN_WIDTH = 100;
+
+        double BOUND_RATIO = 0.7;
+
+        Mat output = new Mat();
+        Mat mat = new Mat();
+
+        @Override
+        public Mat processFrame(Mat input) {
+
+            output.release();
+            output = new Mat();
+
+            Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2YCrCb);
+
+            // variable to store mask in
+            Mat mask = new Mat(mat.rows(), mat.cols(), CvType.CV_8UC1);
+            Core.inRange(mat, lowerOrange, upperOrange, mask);
+
+            Core.bitwise_and(input, input, output, mask);
+
+            Imgproc.GaussianBlur(mask, mask, new Size(5.0, 15.0), 0.00);
+
+            List<MatOfPoint> contours = new ArrayList<>();
+            Mat hierarchy = new Mat();
+            Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
+
+            //draw the horizon line for tuning
+            Imgproc.line(output, new Point(0, HORIZON), new Point(CAMERA_WIDTH, HORIZON), new Scalar(255, 0, 0), 3);
+
+            //Imgproc.drawContours(output, contours, -1, new Scalar(0.0, 255.0, 0.0), 4);
+
+            int maxWidth = 0;
+            Rect maxRect = new Rect();
+            for (MatOfPoint c : contours) {
+                MatOfPoint2f copy = new MatOfPoint2f(c.toArray());
+                Rect rect = Imgproc.boundingRect(copy);
+
+                int w = rect.width;
+                // checking if the rectangle is below the horizon
+                if (w > maxWidth && rect.y + rect.height < HORIZON) {
+                    maxWidth = w;
+                    maxRect = rect;
+                }
+                c.release(); // releasing the buffer of the contour, since after use, it is no longer needed
+                copy.release(); // releasing the buffer of the copy of the contour, since after use, it is no longer needed
+            }
+
+            //draw the rectangle found above
+            Imgproc.rectangle(output, maxRect, new Scalar(0, 0, 255));
+
+            double aspectRatio = (double) maxRect.height / maxRect.width;
+
+            //telemetry.addData("aspect", "" + aspectRatio);
+            //telemetry.addData("maxWidth", "" + maxWidth);
+
+            if (maxWidth >= MIN_WIDTH) {
+                if (aspectRatio > BOUND_RATIO) {
+                    numRings = 4;
+                } else {
+                    numRings = 1;
+                }
+            } else {
+                numRings = 0;
+            }
+            return output;
+        }
+
+        int getResult() {
+            return numRings;
+        }
+    }
+
 }
