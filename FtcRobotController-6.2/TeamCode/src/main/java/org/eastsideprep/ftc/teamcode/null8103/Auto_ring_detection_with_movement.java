@@ -32,6 +32,7 @@ package org.eastsideprep.ftc.teamcode.null8103;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.eastsideprep.ftc.teamcode.null8103.drive.SampleMecanumDrive;
 import org.opencv.core.Core;
@@ -91,15 +92,105 @@ public class Auto_ring_detection_with_movement extends LinearOpMode {
         robot = new RobotHardware();
         robot.init(hardwareMap);
 
-        robot.backwards(400, 0.7); //for example
-        robot.turnLeft(50, 0.7);
+        double shooterPower = 0;
 
+        boolean shootingDone = false;
+
+        double wobblePivotLow = 0.3;
+        double wobblePivotHigh = 1;
+        double wobbleGrabberClosed = 0.2;
+        double wobbleGrabberOpen = 1;
+
+        double ringPusherLow = 0.58; //not touching ring
+        double ringPusherHigh = 0.39; //ring pushed into shooter
+
+        robot.backwards(450, 0.7); //for example
+        robot.turnLeft(50, 0.7);
+        sleep(1000);
+
+        int numRings = RingDetectorPipeline.getResult();
         telemetry.addData("num rings: ", RingDetectorPipeline.getResult());
         telemetry.update();
 
         // Don't burn CPU cycles busy-looping in this sample
-        sleep(1000);
 
+
+        //TODO:
+        //drive forwards to shooting position
+
+        robot.turnLeft(500,0.7);
+        robot.backwards(1250, 0.7);
+        robot.turnRight(880, 0.7);
+        robot.backwards(850,0.7);
+
+        ElapsedTime shooterTimer = new ElapsedTime();
+
+        while (!shootingDone) {
+            shooterPower = 0.93;
+
+            robot.top_intake1.set(0.3);
+            robot.top_intake2.set(0.3);
+            int startTime = 1800;
+
+            if (shooterTimer.milliseconds() >= startTime && shooterTimer.milliseconds() < startTime+500) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+            } else if (shooterTimer.milliseconds() >= startTime+500 && shooterTimer.milliseconds() < startTime+1000) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+
+            } else if (shooterTimer.milliseconds() >= startTime+1000 && shooterTimer.milliseconds() < startTime+1500) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+            } else if (shooterTimer.milliseconds() >= startTime+1500 && shooterTimer.milliseconds() < startTime+2500) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+
+            } else if (shooterTimer.milliseconds() >= startTime+2000 && shooterTimer.milliseconds() < startTime+3500) {
+                robot.RingPushServo.setPosition(ringPusherHigh);
+            } else if (shooterTimer.milliseconds() >= startTime+4500) {
+                robot.RingPushServo.setPosition(ringPusherLow);
+                sleep(200);
+                robot.RingPushServo.setPosition(ringPusherHigh);
+                sleep(500);
+                shootingDone = true;
+            }
+            robot.shooter.motor.setPower(shooterPower);
+        }
+
+        robot.shooter.stopMotor();
+
+        if(numRings==0) {
+            robot.turnRight(475,0.7);
+            robot.backwards(1500, 0.7);
+            robot.wobblePivot.setPosition(wobblePivotHigh);
+            sleep(1000);
+            robot.wobbleGrabber.setPosition(wobbleGrabberClosed);
+            sleep(1000);
+        } else if (numRings == 1) {
+            robot.turnRight(200,0.7);
+            robot.backwards(1500, 0.7);
+            robot.wobblePivot.setPosition(wobblePivotHigh);
+            sleep(1000);
+            robot.wobbleGrabber.setPosition(wobbleGrabberClosed);
+            sleep(1000);
+            robot.wobblePivot.setPosition(wobblePivotLow);
+            sleep(1000);
+            robot.forwards(1000, 0.7);
+        } else {
+            robot.turnRight(100, 0.7);
+            robot.backwards(2500,0.7);
+            robot.turnRight(450, 0.7);
+            robot.wobblePivot.setPosition(wobblePivotHigh);
+            sleep(1000);
+            robot.wobbleGrabber.setPosition(wobbleGrabberClosed);
+            sleep(1000);
+            robot.wobblePivot.setPosition(wobblePivotLow);
+            sleep(1000);
+            robot.forwards(600, 0.7);
+            robot.turnLeft(850, 0.7);
+            robot.forwards(2800, 0.7);
+            robot.backwards(1300, 0.7);
+            robot.runIntake(1);
+            robot.forwards(1500,0.7);
+            robot.backwards(1500,0.7);
+        }
     }
 
     static class RingDetectorPipeline extends OpenCvPipeline {

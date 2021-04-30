@@ -120,12 +120,12 @@ public class Teleop_full extends LinearOpMode {
 
             if (gamepad.getButton((GamepadKeys.Button.A)) && areBlockersOut) {
                 robot.leftBlocker.setPosition(0.5);
-                robot.rightBlocker.setPosition(0.4);
+                robot.rightBlocker.setPosition(0.5);
                 sleep(200);
                 areBlockersOut = false;
             } else if (gamepad.getButton((GamepadKeys.Button.A)) && !areBlockersOut) {
                 robot.leftBlocker.setPosition(0.9);
-                robot.rightBlocker.setPosition(0.0);
+                robot.rightBlocker.setPosition(0.1);
                 sleep(200);
                 areBlockersOut = true;
             }
@@ -152,15 +152,15 @@ public class Teleop_full extends LinearOpMode {
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
                 telemetry.addData("timer 1", shooterTimer.milliseconds());
-                shooterPower = 0.97;
+                shooterPower = 0.9;
                 if (!isShooterOn) {
                     shooterTimer.reset();
                     isShooterOn = true;
                 }
 
                 telemetry.addData("timer 2", shooterTimer.milliseconds());
-                robot.top_intake1.set(0.25);
-                robot.top_intake2.set(0.25);
+                robot.top_intake1.set(0.5);
+                robot.top_intake2.set(0.5);
 
                 if (shooterTimer.milliseconds() >= 3500 && shooterTimer.milliseconds() < 4000) {
                     robot.RingPushServo.setPosition(ringPusherHigh);

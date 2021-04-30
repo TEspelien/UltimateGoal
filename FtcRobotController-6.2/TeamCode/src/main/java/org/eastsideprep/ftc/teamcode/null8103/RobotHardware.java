@@ -352,7 +352,7 @@ public class RobotHardware {
         }
     }
 
-    double ringPusherLow = 0.52; //not touching ring
+    double ringPusherLow = 0.56; //not touching ring
     double ringPusherHigh = 0.39; //ring pushed into shooter
 
     public void pushRing() {
