@@ -31,8 +31,18 @@ package org.eastsideprep.ftc.teamcode.null8103;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.robot.Robot;
 
-import org.opencv.core.*;
+import org.eastsideprep.ftc.teamcode.null8103.drive.SampleMecanumDrive;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -44,9 +54,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 //simple skystone detection teleop, code from https://github.com/OpenFTC/EasyOpenCV/blob/master/examples/src/main/java/org/openftc/easyopencv/examples/SkystoneDeterminationExample.java
-@Autonomous(name = "ring detection auto")
+@Autonomous(name = "ring detection auto messed with")
 
-public class Auto_ring_detection extends LinearOpMode {
+public class Auto_ring_detection_with_movement extends LinearOpMode {
+
+    RobotHardware robot;
+    SampleMecanumDrive drive;
 
     @Override
     public void runOpMode() {
@@ -75,14 +88,17 @@ public class Auto_ring_detection extends LinearOpMode {
         waitForStart();
 
 
+        robot = new RobotHardware();
+        robot.init(hardwareMap);
 
-        while (opModeIsActive()) {
-            telemetry.addData("num rings: ", RingDetectorPipeline.getResult());
-            telemetry.update();
+        robot.backwards(400, 0.7); //for example
+        robot.turnLeft(50, 0.7);
 
-            // Don't burn CPU cycles busy-looping in this sample
-            sleep(1000);
-        }
+        telemetry.addData("num rings: ", RingDetectorPipeline.getResult());
+        telemetry.update();
+
+        // Don't burn CPU cycles busy-looping in this sample
+        sleep(1000);
 
     }
 
