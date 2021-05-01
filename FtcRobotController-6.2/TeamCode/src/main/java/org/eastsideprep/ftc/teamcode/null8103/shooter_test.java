@@ -26,55 +26,55 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.eastsideprep.ftc.teamcode.null8103;
-
-import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.util.Timing;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import java.util.concurrent.TimeUnit;
-
-
-@TeleOp(name = "shooter test")
-
-//simple drive teleop
-public class shooter_test extends LinearOpMode {
-
-    /* Declare OpMode members. */
-    RobotHardware robot = new RobotHardware();
-
-    @Override
-    public void runOpMode() {
-
-        robot.init(hardwareMap);
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
-
-        telemetry.addData("Say", "Ready");
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        GamepadEx gamepad = new GamepadEx(gamepad1);
-
-
-
-
-        while (opModeIsActive()) {
-
-            if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
-                robot.shoot3Rings();
-            }
-            telemetry.addData("velo", robot.shooter.getCorrectedVelocity());
-
-            telemetry.update();
-        }
-    }
-}
+//
+//package org.eastsideprep.ftc.teamcode.null8103;
+//
+//import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+//import com.arcrobotics.ftclib.gamepad.GamepadEx;
+//import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+//import com.arcrobotics.ftclib.hardware.motors.Motor;
+//import com.arcrobotics.ftclib.util.Timing;
+//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+//import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+//
+//import java.util.concurrent.TimeUnit;
+//
+//
+//@TeleOp(name = "shooter test")
+//
+////simple drive teleop
+//public class shooter_test extends LinearOpMode {
+//
+//    /* Declare OpMode members. */
+//    RobotHardware robot = new RobotHardware();
+//
+//    @Override
+//    public void runOpMode() {
+//
+//        robot.init(hardwareMap);
+//        /* Initialize the hardware variables.
+//         * The init() method of the hardware class does all the work here
+//         */
+//
+//        telemetry.addData("Say", "Ready");
+//        telemetry.update();
+//
+//        // Wait for the game to start (driver presses PLAY)
+//        waitForStart();
+//        GamepadEx gamepad = new GamepadEx(gamepad1);
+//
+//
+//
+//
+//        while (opModeIsActive()) {
+//
+//            if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
+//                robot.shoot3Rings();
+//            }
+//            telemetry.addData("velo", robot.shooter.getCorrectedVelocity());
+//
+//            telemetry.update();
+//        }
+//    }
+//}
 

@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 //simple drive teleop
 public class Teleop_full extends LinearOpMode {
+    int shooterVel = 0;
 
     /* Declare OpMode members. */
     RobotHardware robot = new RobotHardware();
@@ -152,11 +153,13 @@ public class Teleop_full extends LinearOpMode {
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
                 telemetry.addData("timer 1", shooterTimer.milliseconds());
-                shooterPower = 0.9;
+
+                shooterVel = 2700;
                 if (!isShooterOn) {
                     shooterTimer.reset();
                     isShooterOn = true;
                 }
+
 
                 telemetry.addData("timer 2", shooterTimer.milliseconds());
                 robot.top_intake1.set(0.5);
@@ -178,14 +181,17 @@ public class Teleop_full extends LinearOpMode {
                     robot.RingPushServo.setPosition(ringPusherLow);
                 }
             } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.8) {
-                shooterPower = 0;
+                shooterVel = 0;
                 isShooterOn = false;
                 robot.RingPushServo.setPosition(ringPusherLow);
             }
 
-            robot.shooter.motor.setPower(shooterPower);
+            if (shooterVel != 0) {
 
-            telemetry.addData("shooter speed", robot.shooter.getCorrectedVelocity());
+                robot.shooter.setVelocity(shooterVel);
+            }
+
+            telemetry.addData("shooter speed", robot.shooter.getVelocity());
             telemetry.addData("shooter timer", shooterTimer.milliseconds());
 
             telemetry.update();

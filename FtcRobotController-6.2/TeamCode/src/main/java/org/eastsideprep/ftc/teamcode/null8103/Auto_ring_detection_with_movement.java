@@ -151,10 +151,10 @@ public class Auto_ring_detection_with_movement extends LinearOpMode {
                 sleep(500);
                 shootingDone = true;
             }
-            robot.shooter.motor.setPower(shooterPower);
+            robot.shooter.setVelocity(200);
         }
 
-        robot.shooter.stopMotor();
+        robot.shooter.setVelocity(0);
 
         if(numRings==0) {
             robot.turnRight(475,0.7);

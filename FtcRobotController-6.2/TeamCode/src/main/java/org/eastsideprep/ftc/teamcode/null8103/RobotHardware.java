@@ -6,6 +6,8 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.hardware.motors.GoBILDA5202Series;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -27,7 +29,7 @@ public class RobotHardware {
     public Motor top_intake1 = null;
     public Motor top_intake2 = null;
 
-    public Motor shooter = null;
+    public DcMotorEx shooter = null;
 
     public SimpleServo RingPushServo = null;
 
@@ -53,7 +55,9 @@ public class RobotHardware {
         top_intake1 = new Motor(hwMap, "IntakeMotor1", Motor.GoBILDA.RPM_1150);
         top_intake2 = new Motor(hwMap, "IntakeMotor2", Motor.GoBILDA.RPM_1150);
 
-        shooter = new Motor(hwMap, "ShooterMotor", 28, 5800);
+        shooter = hwMap.get(DcMotorEx.class, "ShooterMotor");
+        shooter.setDirection(DcMotor.Direction.FORWARD);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         RingPushServo = new SimpleServo(hwMap, "RingPushServo");
 
@@ -71,9 +75,9 @@ public class RobotHardware {
         front_intake.setInverted(false);
         top_intake1.setInverted(false);
         top_intake2.setInverted(false);
-        shooter.setInverted(false);
+        //shooter.setInverted(false);
 
-        shooter.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //shooter.motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         //shooter.setRunMode(Motor.RunMode.VelocityControl);
         //shooter.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -292,34 +296,34 @@ public class RobotHardware {
 
     }
 
-    //both of these shoot methods are targeting the high goal
-    public void shoot3Rings() {
-        Timing.Timer shooterTimer = new Timing.Timer(4000, TimeUnit.MILLISECONDS);
-        shooter.set(0.95);
-        shooterTimer.start();
-
-        if (shooterTimer.currentTime() > 2000) {
-            pushRing();
-        } else if (shooterTimer.currentTime() > 3000) {
-            pushRing();
-        } else if (shooterTimer.done()) {
-            pushRing();
-        }
-
-        shooter.stopMotor();
-    }
-
-    public void shoot1Ring() {
-        Timing.Timer shooterTimer = new Timing.Timer(2000, TimeUnit.MILLISECONDS);
-        shooter.set(0.95);
-        shooterTimer.start();
-
-        if (shooterTimer.done()) {
-            pushRing();
-        }
-
-        shooter.stopMotor();
-    }
+//    //both of these shoot methods are targeting the high goal
+//    public void shoot3Rings() {
+//        Timing.Timer shooterTimer = new Timing.Timer(4000, TimeUnit.MILLISECONDS);
+//        shooter.setVelocity(200);
+//        shooterTimer.start();
+//
+//        if (shooterTimer.currentTime() > 2000) {
+//            pushRing();
+//        } else if (shooterTimer.currentTime() > 3000) {
+//            pushRing();
+//        } else if (shooterTimer.done()) {
+//            pushRing();
+//        }
+//
+//        shooter.setVelocity(0);
+//    }
+//
+//    public void shoot1Ring() {
+//        Timing.Timer shooterTimer = new Timing.Timer(2000, TimeUnit.MILLISECONDS);
+//        shooter.set(0.95);
+//        shooterTimer.start();
+//
+//        if (shooterTimer.done()) {
+//            pushRing();
+//        }
+//
+//        shooter.setPower(0);
+//    }
 
     public void runIntake(double p) {
         front_intake.set(p);
