@@ -90,7 +90,11 @@ public class Teleop_full extends LinearOpMode {
 
         ElapsedTime shooterTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
+        ElapsedTime flickerTimer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+
         robot.RingPushServo.setPosition(ringPusherLow);
+
+        int numShot = 0;
 
         while (opModeIsActive()) {
 
@@ -119,14 +123,15 @@ public class Teleop_full extends LinearOpMode {
                 sleep(200);
             }
 
+            //left and right are flipped
             if (gamepad.getButton((GamepadKeys.Button.A)) && areBlockersOut) {
                 robot.leftBlocker.setPosition(0.5);
-                robot.rightBlocker.setPosition(0.5);
+                robot.rightBlocker.setPosition(0.6);
                 sleep(200);
                 areBlockersOut = false;
             } else if (gamepad.getButton((GamepadKeys.Button.A)) && !areBlockersOut) {
                 robot.leftBlocker.setPosition(0.9);
-                robot.rightBlocker.setPosition(0.1);
+                robot.rightBlocker.setPosition(0.2);
                 sleep(200);
                 areBlockersOut = true;
             }
@@ -152,43 +157,54 @@ public class Teleop_full extends LinearOpMode {
             }
 
             if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.8) {
-                telemetry.addData("timer 1", shooterTimer.milliseconds());
 
-                shooterVel = 2700;
+                shooterVel = 3000;
                 if (!isShooterOn) {
                     shooterTimer.reset();
+                    flickerTimer.reset();
                     isShooterOn = true;
                 }
 
+                robot.top_intake1.set(0.25);
+                robot.top_intake2.set(0.25);
 
-                telemetry.addData("timer 2", shooterTimer.milliseconds());
-                robot.top_intake1.set(0.5);
-                robot.top_intake2.set(0.5);
-
-                if (shooterTimer.milliseconds() >= 3500 && shooterTimer.milliseconds() < 4000) {
+                telemetry.addData("shooter velo yay", robot.shooter.getVelocity());
+                if (robot.shooter.getVelocity() > (shooterVel - 200) && (numShot < 3)) {
                     robot.RingPushServo.setPosition(ringPusherHigh);
-                } else if (shooterTimer.milliseconds() >= 4000 && shooterTimer.milliseconds() < 5000) {
-                    robot.RingPushServo.setPosition(ringPusherLow);
-
-                } else if (shooterTimer.milliseconds() >= 5000 && shooterTimer.milliseconds() < 5500) {
-                    robot.RingPushServo.setPosition(ringPusherHigh);
-                } else if (shooterTimer.milliseconds() >= 5500 && shooterTimer.milliseconds() < 6500) {
-                    robot.RingPushServo.setPosition(ringPusherLow);
-
-                } else if (shooterTimer.milliseconds() >= 6500 && shooterTimer.milliseconds() < 7500) {
-                    robot.RingPushServo.setPosition(ringPusherHigh);
-                } else if (shooterTimer.milliseconds() >= 7500 && shooterTimer.milliseconds() < 8000) {
-                    robot.RingPushServo.setPosition(ringPusherLow);
+                    if (flickerTimer.milliseconds() > 300) {
+                        robot.RingPushServo.setPosition(ringPusherLow);
+                        numShot++;
+                        flickerTimer.reset();
+                    }
                 }
+
+
+//                if (shooterTimer.milliseconds() >= 3500 && shooterTimer.milliseconds() < 4000) {
+//                    robot.RingPushServo.setPosition(ringPusherHigh);
+//                } else if (shooterTimer.milliseconds() >= 4000 && shooterTimer.milliseconds() < 5000) {
+//                    robot.RingPushServo.setPosition(ringPusherLow);
+//
+//                } else if (shooterTimer.milliseconds() >= 5000 && shooterTimer.milliseconds() < 5500) {
+//                    robot.RingPushServo.setPosition(ringPusherHigh);
+//                } else if (shooterTimer.milliseconds() >= 5500 && shooterTimer.milliseconds() < 6500) {
+//                    robot.RingPushServo.setPosition(ringPusherLow);
+//
+//                } else if (shooterTimer.milliseconds() >= 6500 && shooterTimer.milliseconds() < 7500) {
+//                    robot.RingPushServo.setPosition(ringPusherHigh);
+//                } else if (shooterTimer.milliseconds() >= 7500 && shooterTimer.milliseconds() < 8000) {
+//                    robot.RingPushServo.setPosition(ringPusherLow);
+//                }
             } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) < 0.8) {
                 shooterVel = 0;
                 isShooterOn = false;
+                numShot = 0;
                 robot.RingPushServo.setPosition(ringPusherLow);
             }
 
             if (shooterVel != 0) {
-
                 robot.shooter.setVelocity(shooterVel);
+            } else {
+                robot.shooter.setPower(0);
             }
 
             telemetry.addData("shooter speed", robot.shooter.getVelocity());
